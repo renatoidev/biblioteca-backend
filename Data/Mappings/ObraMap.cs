@@ -8,7 +8,7 @@ public class ObraMap : IEntityTypeConfiguration<Obra>
 {
     public void Configure(EntityTypeBuilder<Obra> builder)
     {
-        builder.ToTable("Obras");
+        builder.ToTable("Obra");
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Titulo)
@@ -35,7 +35,7 @@ public class ObraMap : IEntityTypeConfiguration<Obra>
         builder.HasMany(x => x.Autores)
         .WithMany(x => x.Obras)
         .UsingEntity<Dictionary<string, object>>(
-            "AutorObra",
+            "ObraAutor",
             obra => obra
             .HasOne<Autor>()
             .WithMany()

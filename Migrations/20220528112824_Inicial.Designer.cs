@@ -10,28 +10,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace biblioteca_backend.Migrations
 {
     [DbContext(typeof(ObraDataContext))]
-    [Migration("20220520145359_Inicial")]
+    [Migration("20220528112824_Inicial")]
     partial class Inicial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
-
-            modelBuilder.Entity("ObraAutor", b =>
-                {
-                    b.Property<int>("AutoresId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ObrasId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("AutoresId", "ObrasId");
-
-                    b.HasIndex("ObrasId");
-
-                    b.ToTable("ObraAutor");
-                });
 
             modelBuilder.Entity("Biblioteca.Models.Autor", b =>
                 {
@@ -44,7 +29,7 @@ namespace biblioteca_backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Autores");
+                    b.ToTable("Autor");
                 });
 
             modelBuilder.Entity("Biblioteca.Models.Obra", b =>
@@ -54,32 +39,58 @@ namespace biblioteca_backend.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Editora")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("VARCHAR")
+                        .HasColumnName("editora");
 
                     b.Property<string>("Foto")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("VARCHAR")
+                        .HasColumnName("foto");
 
                     b.Property<string>("Titulo")
-                        .HasColumnType("TEXT");
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("VARCHAR")
+                        .HasColumnName("titulo");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Obras");
+                    b.ToTable("Obra", (string)null);
                 });
 
             modelBuilder.Entity("ObraAutor", b =>
                 {
-                    b.HasOne("Biblioteca.Models.Autor", null)
-                        .WithMany()
-                        .HasForeignKey("AutoresId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("AutorId")
+                        .HasColumnType("INTEGER");
 
+                    b.Property<int>("ObraId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("AutorId", "ObraId");
+
+                    b.HasIndex("ObraId");
+
+                    b.ToTable("ObraAutor");
+                });
+
+            modelBuilder.Entity("ObraAutor", b =>
+                {
                     b.HasOne("Biblioteca.Models.Obra", null)
                         .WithMany()
-                        .HasForeignKey("ObrasId")
+                        .HasForeignKey("AutorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_ObraAutor_AutorId");
+
+                    b.HasOne("Biblioteca.Models.Autor", null)
+                        .WithMany()
+                        .HasForeignKey("ObraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ObraAutor_ObraId");
                 });
 #pragma warning restore 612, 618
         }

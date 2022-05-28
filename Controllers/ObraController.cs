@@ -13,42 +13,18 @@ public class ObraController : ControllerBase
         [FromServices] ObraDataContext context
     )
     {
-        var autores = context.Autores.ToList();
-        var obras = context.Obras.ToList();
-        var autoresModel = "";
-        var obraAutores = context.ObraAutor.ToList();
 
-        
-
-        var result = await context
-            .Obras
-            .AsNoTracking()
-            .Include(obra => obra.Autores)
-            .Select(x => new ObraViewModel
+        var result = await context.Obras
+            .Include(o => o.Autores)
+            .Select(x => new 
             {
                 Titulo = x.Titulo,
                 Editora = x.Editora,
                 Foto = x.Foto,
-                Autores = x.RetornaAutores(obras,autores,obraAutores)
-
+                Autores = x.Autores
             })
             .ToListAsync();
-
-        var result2 = await context
-            .ObraAutor
-            .AsNoTracking()
-            .Include(obra => obra.Obra)
-            .Include(autor => autor.Autor)
-            .Select(x => new ObraViewModel
-            {
-                Titulo = x.Obra.Titulo,
-                Editora = x.Obra.Editora,
-                Foto = x.Obra.Foto,
-                Autores = x.RetornaAutores(obras, autores, obraAutores)
-            })
-            .ToListAsync();
-        return Ok(result2);
-
+        return Ok(result);
     }
 
     [HttpPost("/obras")]
@@ -57,36 +33,32 @@ public class ObraController : ControllerBase
         [FromServices] ObraDataContext context
     )
     {
-        
-        //var autor = await context.Autores.FirstOrDefaultAsync(x => x.Obra.Id == model.Autor.ObraId);
+        var autores = context.Autores.ToList();
+        var autoresModel = new List<Autor>();
 
+        foreach (var autor in model.Autores)
+        {
+            if (!autores.Any(x => x.Nome == autor.Nome))
+            {
+                autoresModel.Add(new Autor { Nome = autor.Nome });
+            }
+            else
+            {
+                autoresModel.Add(autores.FirstOrDefault());
+            }
+        }
         var obra = new Obra
         {
             Titulo = model.Titulo,
             Editora = model.Editora,
-            Foto = model.Foto
+            Foto = model.Foto,
+            Autores = autoresModel
+            
         };
 
-        
-        
-            
-        foreach (var autor in model.Autores)
-        {
-            var autorContext = await context.Autores.FirstOrDefaultAsync(x => x.Nome.ToLower() == autor.Nome.ToLower());
-
-            if (autorContext is not null)
-                obra.Autores.Add(autorContext);
-            else
-            {
-                var novoAutor = new Autor();
-                novoAutor.Nome = autor.Nome;
-                obra.Autores.Add(novoAutor);
-            }
-        }
-
-        var result = context.Obras.Add(obra);
+        context.Obras.Add(obra);
         await context.SaveChangesAsync();
-        return Created($"{obra.Id}", result);
-            
-    }
+
+        return Ok("Obra criada com sucesso");       
+    }    
 }

@@ -12,12 +12,10 @@ public class ObraDataContext : DbContext
 
     public DbSet<Obra> Obras { get; set; }
     public DbSet<Autor> Autores { get; set; }
-    public DbSet<ObraAutor> ObraAutor { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new ObraMap());
-        modelBuilder.ApplyConfiguration(new AutorMap());
         //base.OnModelCreating(modelBuilder);
     }
 }

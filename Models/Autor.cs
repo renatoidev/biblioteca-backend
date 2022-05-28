@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Biblioteca.Models;
 
+[Table("Autor")]
 public class Autor
 {
     public Autor()
@@ -8,5 +11,5 @@ public class Autor
     }
     public int Id { get; set; }
     public string? Nome { get; set; }
-    public IList<Obra> Obras { get; set; } 
+    public List<Obra> Obras { get; set; } 
 }

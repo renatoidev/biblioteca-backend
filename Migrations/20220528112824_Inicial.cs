@@ -9,7 +9,7 @@ namespace biblioteca_backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Autores",
+                name: "Autor",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -18,52 +18,52 @@ namespace biblioteca_backend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Autores", x => x.Id);
+                    table.PrimaryKey("PK_Autor", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Obras",
+                name: "Obra",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Titulo = table.Column<string>(type: "TEXT", nullable: true),
-                    Editora = table.Column<string>(type: "TEXT", nullable: true),
-                    Foto = table.Column<string>(type: "TEXT", nullable: true)
+                    titulo = table.Column<string>(type: "VARCHAR", maxLength: 45, nullable: false),
+                    editora = table.Column<string>(type: "VARCHAR", maxLength: 45, nullable: false),
+                    foto = table.Column<string>(type: "VARCHAR", maxLength: 45, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Obras", x => x.Id);
+                    table.PrimaryKey("PK_Obra", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ObraAutor",
                 columns: table => new
                 {
-                    AutoresId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ObrasId = table.Column<int>(type: "INTEGER", nullable: false)
+                    AutorId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ObraId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AutorObra", x => new { x.AutoresId, x.ObrasId });
+                    table.PrimaryKey("PK_ObraAutor", x => new { x.AutorId, x.ObraId });
                     table.ForeignKey(
-                        name: "FK_AutorObra_Autores_AutoresId",
-                        column: x => x.AutoresId,
-                        principalTable: "Autores",
+                        name: "FK_ObraAutor_AutorId",
+                        column: x => x.AutorId,
+                        principalTable: "Obra",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AutorObra_Obras_ObrasId",
-                        column: x => x.ObrasId,
-                        principalTable: "Obras",
+                        name: "FK_ObraAutor_ObraId",
+                        column: x => x.ObraId,
+                        principalTable: "Autor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AutorObra_ObrasId",
+                name: "IX_ObraAutor_ObraId",
                 table: "ObraAutor",
-                column: "ObrasId");
+                column: "ObraId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -72,10 +72,10 @@ namespace biblioteca_backend.Migrations
                 name: "ObraAutor");
 
             migrationBuilder.DropTable(
-                name: "Autores");
+                name: "Obra");
 
             migrationBuilder.DropTable(
-                name: "Obras");
+                name: "Autor");
         }
     }
 }
