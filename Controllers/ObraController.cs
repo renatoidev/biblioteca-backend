@@ -52,13 +52,61 @@ public class ObraController : ControllerBase
             Titulo = model.Titulo,
             Editora = model.Editora,
             Foto = model.Foto,
-            Autores = autoresModel
-            
+            Autores = autoresModel            
         };
 
         context.Obras.Add(obra);
         await context.SaveChangesAsync();
 
         return Ok("Obra criada com sucesso");       
-    }    
+    }
+
+    [HttpPut("/obras/{id}")]
+    public async Task<IActionResult> EditarObra (
+        [FromServices] ObraDataContext context,
+        [FromBody] ObraViewModel model,
+        [FromRoute] int id)
+    {
+        var obra = await context.Obras.Include(x => x.Autores).FirstOrDefaultAsync(x => x.Id == id);
+        var autores = obra.Autores;
+        var modelAutores = new List<Autor>();
+
+        foreach(var autor in autores)
+        {
+            if(!model.Autores.Any(x => x.Nome == autor.Nome))
+            {
+                modelAutores.Add(new Autor { Nome = model.Autores.FirstOrDefault().Nome });
+            }
+            else
+            {
+                modelAutores.Add(autores.FirstOrDefault());
+            }
+        }
+
+        obra.Titulo = model.Titulo;
+        obra.Editora = model.Editora;
+        obra.Foto = model.Foto;
+        obra.Autores = modelAutores;
+
+        context.Obras.Update(obra);
+        await context.SaveChangesAsync();
+
+        return Ok("Obra alterada com sucesso");
+    }
+
+    [HttpDelete ("/obras/{id}")]
+    public async Task<IActionResult> DeletarObra (
+        [FromRoute] int id,
+        [FromServices] ObraDataContext context)
+    {
+        var obra = await context.Obras.FirstOrDefaultAsync(x => x.Id == id);
+        
+        if (obra == null)
+            return NotFound();
+
+        context.Obras.Remove(obra);
+        await context.SaveChangesAsync();
+
+        return Ok("Obra deletada com sucesso");
+    }
 }
