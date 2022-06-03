@@ -17,14 +17,41 @@ public class ObraController : ControllerBase
         var result = await context.Obras
             .Include(o => o.Autores)
             .Select(x => new 
-            {
+            {                
                 Titulo = x.Titulo,
                 Editora = x.Editora,
                 Foto = x.Foto,
-                Autores = x.Autores
+                Autores = x.Autores.Select(a => a.Nome)
             })
             .ToListAsync();
         return Ok(result);
+    }
+
+    [HttpGet("/obras/{id}")]
+    public async Task<IActionResult> ListarObra(
+        [FromRoute] int id,
+        [FromServices] ObraDataContext context)
+    {
+        try
+        {
+            var result = await context.Obras
+                .Include(o => o.Autores)
+                .Where(x => x.Id == id)
+                .Select(x => new
+                {
+                    Titulo = x.Titulo,
+                    Editora = x.Editora,
+                    Foto = x.Foto,
+                    Autores = x.Autores.Select(a => a.Nome)
+                })
+                .ToListAsync();
+
+            return Ok(result);
+        }
+        catch
+        {
+            return NotFound("Obra não econtrada");
+        }
     }
 
     [HttpPost("/obras")]
@@ -33,32 +60,53 @@ public class ObraController : ControllerBase
         [FromServices] ObraDataContext context
     )
     {
-        var autores = context.Autores.ToList();
-        var autoresModel = new List<Autor>();
-
-        foreach (var autor in model.Autores)
+        try
         {
-            if (!autores.Any(x => x.Nome == autor.Nome))
+            var autores = context.Autores.ToList();
+            var autoresModel = new List<Autor>();
+
+            foreach (var autor in model.Autores)
             {
-                autoresModel.Add(new Autor { Nome = autor.Nome });
+                if (!autores.Any(x => x.Nome == autor.Nome))
+                {
+                    autoresModel.Add(new Autor { Nome = autor.Nome });
+                }
+                else
+                {
+                    autoresModel.Add(autores.FirstOrDefault());
+                }
             }
-            else
+            var obra = new Obra
             {
-                autoresModel.Add(autores.FirstOrDefault());
+                Titulo = model.Titulo,
+                Editora = model.Editora,
+                Foto = model.Foto,
+                Autores = autoresModel
+            };
+
+            context.Obras.Add(obra);
+            await context.SaveChangesAsync();
+
+            var autoresResult = new List<AutorViewModel>();
+            foreach (var a in autoresModel)
+            {
+                var atr = new AutorViewModel() { Nome = a.Nome };
+                autoresResult.Add(atr);
             }
+
+            var result = new ObraViewModel
+            {
+                Titulo = obra.Titulo,
+                Editora = obra.Editora,
+                Foto = obra.Foto,
+                Autores = autoresResult
+            };
+            return Ok(result);
         }
-        var obra = new Obra
+        catch
         {
-            Titulo = model.Titulo,
-            Editora = model.Editora,
-            Foto = model.Foto,
-            Autores = autoresModel            
-        };
-
-        context.Obras.Add(obra);
-        await context.SaveChangesAsync();
-
-        return Ok("Obra criada com sucesso");       
+            return BadRequest("Não foi possível cadastrar a obra");
+        }
     }
 
     [HttpPut("/obras/{id}")]
@@ -67,31 +115,51 @@ public class ObraController : ControllerBase
         [FromBody] ObraViewModel model,
         [FromRoute] int id)
     {
-        var obra = await context.Obras.Include(x => x.Autores).FirstOrDefaultAsync(x => x.Id == id);
-        var autores = obra.Autores;
-        var modelAutores = new List<Autor>();
-
-        foreach(var autor in autores)
+        try
         {
-            if(!model.Autores.Any(x => x.Nome == autor.Nome))
+            var obra = await context.Obras.Include(x => x.Autores).FirstOrDefaultAsync(x => x.Id == id);
+
+            var autores = obra.Autores;
+            var modelAutores = new List<Autor>();
+
+            foreach (var autor in autores)
             {
-                modelAutores.Add(new Autor { Nome = model.Autores.FirstOrDefault().Nome });
+                if (!model.Autores.Any(x => x.Nome == autor.Nome))
+                {
+                    modelAutores.Add(new Autor { Nome = model.Autores.FirstOrDefault().Nome });
+                }
+                else
+                {
+                    modelAutores.Add(autores.FirstOrDefault());
+                }
             }
-            else
+
+            obra.Titulo = model.Titulo;
+            obra.Editora = model.Editora;
+            obra.Foto = model.Foto;
+            obra.Autores = modelAutores;
+
+            context.Obras.Update(obra);
+            await context.SaveChangesAsync();
+
+            var result = await context.Obras
+            .Include(o => o.Autores)
+            .Where(x => x.Id == id)
+            .Select(x => new
             {
-                modelAutores.Add(autores.FirstOrDefault());
-            }
+                Titulo = x.Titulo,
+                Editora = x.Editora,
+                Foto = x.Foto,
+                Autores = x.Autores.Select(a => a.Nome)
+            })
+            .ToListAsync();
+
+            return Ok(result);
         }
-
-        obra.Titulo = model.Titulo;
-        obra.Editora = model.Editora;
-        obra.Foto = model.Foto;
-        obra.Autores = modelAutores;
-
-        context.Obras.Update(obra);
-        await context.SaveChangesAsync();
-
-        return Ok("Obra alterada com sucesso");
+        catch
+        {
+            return NotFound("Não foi possível editar a obra");
+        }
     }
 
     [HttpDelete ("/obras/{id}")]
@@ -102,7 +170,7 @@ public class ObraController : ControllerBase
         var obra = await context.Obras.FirstOrDefaultAsync(x => x.Id == id);
         
         if (obra == null)
-            return NotFound();
+            return NotFound("Obra não encontrada");
 
         context.Obras.Remove(obra);
         await context.SaveChangesAsync();
