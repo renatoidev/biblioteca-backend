@@ -1,22 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "biblioteca-backend", "biblioteca-backend.csproj", "{28176B0B-19C5-4DFA-BBE9-0AF34BF0F3CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "biblioteca-backend", "biblioteca-backend.csproj", "{28176B0B-19C5-4DFA-BBE9-0AF34BF0F3CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "biblioteca-backendTest", "..\biblioteca-backendTest\biblioteca-backendTest.csproj", "{D9D0CAA9-399C-43F1-A1FC-5D4D56402CD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{28176B0B-19C5-4DFA-BBE9-0AF34BF0F3CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{28176B0B-19C5-4DFA-BBE9-0AF34BF0F3CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28176B0B-19C5-4DFA-BBE9-0AF34BF0F3CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28176B0B-19C5-4DFA-BBE9-0AF34BF0F3CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9D0CAA9-399C-43F1-A1FC-5D4D56402CD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9D0CAA9-399C-43F1-A1FC-5D4D56402CD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9D0CAA9-399C-43F1-A1FC-5D4D56402CD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9D0CAA9-399C-43F1-A1FC-5D4D56402CD6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {27FBBD53-4EEF-43D9-9893-11BC7F090434}
 	EndGlobalSection
 EndGlobal

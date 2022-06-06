@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Biblioteca.Models;
 
@@ -11,5 +12,6 @@ public class Autor
     }
     public int Id { get; set; }
     public string? Nome { get; set; }
+    [JsonIgnore]
     public List<Obra> Obras { get; set; } 
 }

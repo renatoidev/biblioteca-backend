@@ -15,6 +15,7 @@ public class ObraController : ControllerBase
     {
 
         var result = await context.Obras
+            .AsNoTracking()
             .Include(o => o.Autores)
             .Select(x => new 
             {                
@@ -35,6 +36,7 @@ public class ObraController : ControllerBase
         try
         {
             var result = await context.Obras
+                .AsNoTracking()
                 .Include(o => o.Autores)
                 .Where(x => x.Id == id)
                 .Select(x => new
